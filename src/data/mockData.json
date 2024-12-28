@@ -1,0 +1,11 @@
+{
+  "customers": [
+    { "id": 1, "name": "John Doe", "region": "North", "invoices": [101, 102] },
+    { "id": 2, "name": "Jane Smith", "region": "South", "invoices": [103] }
+  ],
+  "invoices": [
+    { "id": 101, "customerId": 1, "amount": 500, "status": "Paid" },
+    { "id": 102, "customerId": 1, "amount": 200, "status": "Pending" },
+    { "id": 103, "customerId": 2, "amount": 300, "status": "Pending" }
+  ]
+}
