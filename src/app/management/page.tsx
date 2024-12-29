@@ -1,5 +1,5 @@
 import React from 'react';
-import ManagementLayout from '../../layouts/ManagementLayout';
+import ManagementLayout from '../../layouts/ManagerLayout';
 
 const ManagementPage = () => {
   return (

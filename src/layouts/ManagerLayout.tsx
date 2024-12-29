@@ -3,12 +3,12 @@ import { SessionProvider } from "next-auth/react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-const AdminLayout = ({ children }: { children: React.ReactNode}) => {
+const ManagementLayout = ({children}: {children: React.ReactNode}) => {
   return (
     <SessionProvider>
       <div>
         <Header />
-          <h1>Admin Dashboard</h1>
+          <h1>Management Dashboard</h1>
         <main>{children}</main>
         <Footer />
       </div>
@@ -16,4 +16,4 @@ const AdminLayout = ({ children }: { children: React.ReactNode}) => {
   )
 }
 
-export default AdminLayout
+export default ManagementLayout

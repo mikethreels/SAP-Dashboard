@@ -1,27 +1,45 @@
+"use client";
+
 import React from 'react';
-import Link from 'next/link'
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import AdminLayout from "../layouts/AdminLayout";
+import SalesLayout from "../layouts/SalesLayout";
+import ManagerLayout from "../layouts/ManagerLayout";
+import CollectorLayout from "../layouts/CollectorLayout";
 
 const HomePage = () => {
-  return (
-    <div>
-      <h1>Welcome to Your Next.js Application!</h1>
-      <p>
-        This is the root page of your app. You can navigate to different sections below:
-      </p>
-      <ul>
-        <li>
-          <Link href="/sales">Sales Dashboard</Link>
-        </li>
-        <li>
-          <Link href="/collectors">Collector's Page</Link>
-        </li>
-        <li>
-          <Link href="/management">Management Dashboard</Link>
-        </li>
-      </ul>
+  const { data: session } = useSession();
+  const router = useRouter();
 
-    </div>
-  );
+  useEffect(() => {
+    // Check if session and session.user exist before accessing session.user.role
+    if (session && session.user) {
+      switch (session.user.role) {
+        case "admin":
+          router.push("/admin");
+          break;
+        case "sales":
+          router.push("/sales");
+          break;
+        case "manager":
+          router.push("/manager");
+          break;
+        case "collector":
+          router.push("/collector");
+          break;
+        default:
+          router.push("/"); // Redirect to home if no role
+      }
+    }
+  }, [session, router]);
+
+  if (!session) {
+    return <div>Please log in to view the dashboard.</div>;
+  }
+
+  return <div>Redirecting...</div>;
 };
 
 export default HomePage;
