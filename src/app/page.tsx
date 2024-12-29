@@ -1,15 +1,25 @@
 import React from 'react';
+import Link from 'next/link'
 
 const HomePage = () => {
   return (
     <div>
       <h1>Welcome to Your Next.js Application!</h1>
       <p>
-        This is the root page of your app. It’s currently working and ready for development.
+        This is the root page of your app. You can navigate to different sections below:
       </p>
-      <p>
-        You can start building your app from here. Next.js and React are fully integrated!
-      </p>
+      <ul>
+        <li>
+          <Link href="/sales">Sales Dashboard</Link>
+        </li>
+        <li>
+          <Link href="/collectors">Collector's Page</Link>
+        </li>
+        <li>
+          <Link href="/management">Management Dashboard</Link>
+        </li>
+      </ul>
+
     </div>
   );
 };
