@@ -1,17 +1,5 @@
-"use client";
+import DashboardPage from "@/components/DashboardPage";
 
-import React from "react";
-import { useSession } from "next-auth/react";
-
-const CollectorPage = () => {
-  const { data: session } = useSession();
-
-  return (
-    <div>
-      <h1>Collector Dashboard</h1>
-      <p>Welcome, {session?.user?.name}</p>
-    </div>
-  );
-};
+const CollectorPage = () => <DashboardPage role="admin" />;
 
 export default CollectorPage;

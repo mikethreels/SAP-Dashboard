@@ -1,17 +1,5 @@
-"use client";
+import DashboardPage from "@/components/DashboardPage";
 
-import React from "react";
-import { useSession } from "next-auth/react";
-
-const ManagerPage = () => {
-  const { data: session } = useSession();
-
-  return (
-    <div>
-      <h1>Manager Dashboard</h1>
-      <p>Welcome, {session?.user?.name}</p>
-    </div>
-  );
-};
+const ManagerPage = () => <DashboardPage role="admin" />;
 
 export default ManagerPage;
