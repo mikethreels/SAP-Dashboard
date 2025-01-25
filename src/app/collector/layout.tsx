@@ -1,15 +1,16 @@
 'use client';
-import React from 'react'
-import { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-export default function CollectorLayout({ children }: { children: ReactNode }) {
-  const { data: session } = useSession();
+const CollectorLayout = ({ children }: { children: ReactNode }) => {
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (session?.user?.role !== 'collector') {
-    router.push('/login');
+  if (status === "loading") return <div>Loading...</div>;
+
+  if (!session || session.user.role !== "collector") {
+    router.push("/login");
     return null;
   }
 
@@ -20,4 +21,6 @@ export default function CollectorLayout({ children }: { children: ReactNode }) {
       <footer>Collector Footer</footer>
     </div>
   );
-}
+};
+
+export default CollectorLayout;

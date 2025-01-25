@@ -1,23 +1,26 @@
 'use client';
-import React from 'react'
-import { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
-export default function SalesLayout({ children }: { children: ReactNode }) {
-  const { data: session } = useSession();
+const SalesLayout = ({ children }: { children: ReactNode }) => {
+  const { data: session, status } = useSession();
   const router = useRouter();
 
-  if (session?.user?.role !== 'sales') {
-    router.push('/login'); // Redirect if not a sales user
-    return null; // Prevent rendering if not authorized
+  if (status === "loading") return <div>Loading...</div>;
+
+  if (!session || session.user.role !== "sales") {
+    router.push("/login");
+    return null;
   }
 
   return (
     <div>
-      <header>Sales Dashboard Header</header>
+      <header>Sales Dashboard</header>
       <main>{children}</main>
       <footer>Sales Footer</footer>
     </div>
   );
-}
+};
+
+export default SalesLayout;
