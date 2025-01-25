@@ -1,12 +1,13 @@
+'use client';
+
 import React from 'react';
-import SalesLayout from '../../layouts/SalesLayout';
 
 const SalesPage = () => {
   return (
-    <SalesLayout>
-      <h2>Sales Dashboard</h2>
-      <p>Welcome to the sales dashboard!</p>
-    </SalesLayout>
+    <div>
+      <h1>Sales Dashboard</h1>
+      <p>Welcome to the Sales Dashboard</p>
+    </div>
   );
 };
 
