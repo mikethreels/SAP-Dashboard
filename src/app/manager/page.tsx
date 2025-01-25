@@ -1,12 +1,15 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
+import { useSession } from "next-auth/react";
 
 const ManagerPage = () => {
+  const { data: session } = useSession();
+
   return (
     <div>
       <h1>Manager Dashboard</h1>
-      <p>Welcome to the Manager Dashboard</p>
+      <p>Welcome, {session?.user?.name}</p>
     </div>
   );
 };
