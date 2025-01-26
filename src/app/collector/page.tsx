@@ -1,5 +1,5 @@
 import DashboardPage from "@/components/DashboardPage";
 
-const CollectorPage = () => <DashboardPage role="admin" />;
+const CollectorPage = () => <DashboardPage role="collector" />;
 
 export default CollectorPage;

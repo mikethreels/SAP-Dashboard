@@ -1,4 +1,5 @@
 'use client';
+
 import { useState, useEffect } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -12,6 +13,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Redirect based on the user's role if already logged in
+    console.log("Session data: ", session);
     if (session?.user?.role) {
       switch (session.user.role) {
         case 'admin':

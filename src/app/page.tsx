@@ -16,6 +16,8 @@ const HomePage = () => {
   useEffect(() => {
     if (!isMounted) return; // Only run after the component is mounted on the client
 
+    if (status === "loading") return;
+
     if (status === "authenticated" && session?.user) {
       // Redirect based on user role
       switch (session.user.role) {
