@@ -1,6 +1,5 @@
 "use client";
 
-import RoleBasedLayout from "@/components/RoleBasedLayout";
 import { useSession } from "next-auth/react";
 
 interface DashboardPageProps {
@@ -11,10 +10,10 @@ const DashboardPage = ({ role }: DashboardPageProps) => {
   const { data: session } = useSession();
 
   return (
-    <RoleBasedLayout requiredRole={role}>
+    <div>
       <h1>{role.charAt(0).toUpperCase() + role.slice(1)} Dashboard</h1>
       <p>Welcome, {session?.user?.name}</p>
-    </RoleBasedLayout>
+    </div>
   );
 };
 

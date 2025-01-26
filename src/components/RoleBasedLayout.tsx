@@ -2,7 +2,7 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 
 interface RoleBasedLayoutProps {
@@ -16,18 +16,29 @@ const RoleBasedLayout = ({ children, requiredRole }: RoleBasedLayoutProps) => {
   const [redirecting, setRedirecting] = useState<boolean>(false);
 
   useEffect(() => {
-    // Prevent re-triggering of redirection if already in process
     if (status === "loading" || redirecting) return;
 
-    if (!session || session.user.role !== requiredRole) {
-      setRedirecting(true);  // Flag to prevent future redirects
+    if (!session) {
+      setRedirecting(true);
       router.push("/login");
     }
+
+    // if (!session || session.user.role !== requiredRole) {
+    //   setRedirecting(true);  // Flag to prevent future redirects
+    //   router.push("/login");
+    // }
   }, [session, status, requiredRole, router, redirecting]);
 
-  if (status === "loading" || !session || session.user.role !== requiredRole) {
-    return <div>Loading...</div>;
+  if (status === "loading") return <div>Loading...</div>;
+  if (!session) return null;
+
+  if (session.user.role !== requiredRole) {
+    notFound();
   }
+
+  // if (status === "loading" || !session || session.user.role !== requiredRole) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="flex h-screen">
