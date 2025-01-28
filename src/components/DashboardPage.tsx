@@ -8,9 +8,25 @@ interface DashboardPageProps {
   role: string;
 }
 
+interface Customer {
+  id: number;
+  name: string;
+  region: string;
+  portfolio: string;
+}
+
+interface Invoice {
+  id: number;
+  customerId: number;
+  amount: number;
+  invoiceDate: string;
+  dueDate: string;
+}
+
 const DashboardPage = ({ role }: DashboardPageProps) => {
   const { data: session } = useSession();
-  const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([]);
+  const [totals, setTotals] = useState<Record<number, { total: number; overdue: number }>>({});
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
 
   useEffect(() => {
@@ -32,6 +48,28 @@ const DashboardPage = ({ role }: DashboardPageProps) => {
 
     setFilteredCustomers(customers);
   }, [session, role]);
+
+  useEffect(() => {
+    // Calculate totals for each customer
+    const today = new Date();
+    const customerTotals: Record<number, { total: number; overdue: number }> = {};
+
+    filteredCustomers.forEach((customer) => {
+      const customerInvoices = mockData.invoices.filter((inv) => inv.customerId === customer.id);
+      const totalAmount = customerInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+      const overdueAmount = customerInvoices
+        .filter((inv) => {
+          const [day, month, year] = inv.dueDate.split(".").map(Number);
+          const dueDate = new Date(year, month - 1, day);
+          return dueDate < today;
+        })
+        .reduce((sum, inv) => sum + inv.amount, 0);
+
+      customerTotals[customer.id] = { total: totalAmount, overdue: overdueAmount };
+    });
+
+    setTotals(customerTotals);
+  }, [filteredCustomers]);
 
   const handlePortfolioChange = (portfolio: string) => {
     if (portfolio === "all") {
@@ -68,14 +106,31 @@ const DashboardPage = ({ role }: DashboardPageProps) => {
         </div>
       )}
 
-      <h2>Customers</h2>
-      <ul>
-        {filteredCustomers.map((customer) => (
-          <li key={customer.id}>
-            {customer.name} - {customer.region} - Portfolio: {customer.portfolio}
-          </li>
-        ))}
-      </ul>
+      <h2>Customer Overview</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Customer Name</th>
+            <th>Region</th>
+            <th>Portfolio</th>
+            <th>Total Invoice Amount</th>
+            <th>Overdue Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredCustomers.map((customer) => (
+            <tr key={customer.id}>
+              <td>{customer.name}</td>
+              <td>{customer.region}</td>
+              <td>{customer.portfolio}</td>
+              <td>${totals[customer.id]?.total.toFixed(2) || "0.00"}</td>
+              <td style={{ color: totals[customer.id]?.overdue ? "red" : "inherit" }}>
+                ${totals[customer.id]?.overdue.toFixed(2) || "0.00"}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
