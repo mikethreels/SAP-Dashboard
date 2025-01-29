@@ -22,6 +22,7 @@ const DashboardPage = ({ role }: DashboardPageProps) => {
   const { data: session } = useSession();
   const [filteredCustomers, setFilteredCustomers] = useState<any[]>([]);
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>("");
+  const [selectedTab, setSelectedTab] = useState<string>("portfolio"); // Set PortfolioOverview as default tab
 
   useEffect(() => {
     if (!session) return;
@@ -58,18 +59,33 @@ const DashboardPage = ({ role }: DashboardPageProps) => {
     setSelectedPortfolio(portfolio);
   };
 
+  // Function to handle tab change
+  const handleTabChange = (tab: string) => {
+    setSelectedTab(tab);
+  };
+
   return (
     <div>
       <h1>{role.charAt(0).toUpperCase() + role.slice(1)} Dashboard</h1>
       <p>Welcome, {session?.user?.name}</p>
 
       {role === "collector" && <CollectorFilter selectedPortfolio={selectedPortfolio} onPortfolioChange={handlePortfolioChange} />}
-      {role === "manager" && <PortfolioOverview />}
-      {role === "manager" && <DSOOverview />}
+      
+      {/* Tab System */}
+      <div>
+        <button onClick={() => handleTabChange("portfolio")}>Portfolio Overview</button>
+        <button onClick={() => handleTabChange("customers")}>Customer Overview</button>
+        {role === "manager" && <button onClick={() => handleTabChange("dso")}>DSO Overview</button>}
+      </div>
 
-      <CustomerTable customers={filteredCustomers} />
+      {/* Render content based on selected tab */}
+      {selectedTab === "portfolio" && <PortfolioOverview />}
+      {selectedTab === "customers" && <CustomerTable customers={filteredCustomers} />}
+      {selectedTab === "dso" && <DSOOverview />}
     </div>
   );
 };
 
 export default DashboardPage;
+
+
