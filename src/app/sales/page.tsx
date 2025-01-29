@@ -1,4 +1,4 @@
-import DashboardPage from "@/components/DashboardPage";
+import DashboardPage from "@/components/dashboard/page";
 import RoleBasedLayout from "@/components/RoleBasedLayout";
 
 const SalesPage = () => (
