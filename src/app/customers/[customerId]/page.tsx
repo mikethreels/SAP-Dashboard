@@ -5,7 +5,6 @@ import mockData from "@/data/mockData.json";
 import { parseDate } from "@/utils/dateUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import * as XLSX from "xlsx";
 
 interface Invoice {
   id: number;
@@ -28,6 +27,12 @@ const CustomerDetailsPage = () => {
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [agingBuckets, setAgingBuckets] = useState({
+    "1-30": 0,
+    "31-60": 0,
+    "61-90": 0,
+    "91+": 0,
+  });
 
   const router = useRouter();
 
@@ -35,56 +40,37 @@ const CustomerDetailsPage = () => {
     const foundCustomer = mockData.customers.find((c) => c.id === customerId);
     if (foundCustomer) {
       setCustomer(foundCustomer);
-      setInvoices(
-        mockData.invoices
-          .filter((inv) => inv.customerId === customerId)
-          .map((inv) => ({
-            ...inv,
-            date: inv.invoiceDate,
-          }))
+
+      const customerInvoices = mockData.invoices.filter(
+        (inv) => inv.customerId === customerId
       );
+
+      setInvoices(customerInvoices);
+
+      // Calculate aging buckets
+      const today = new Date();
+      const updatedBuckets = { "1-30": 0, "31-60": 0, "61-90": 0, "91+": 0 };
+
+      customerInvoices.forEach((invoice) => {
+        const dueDate = parseDate(invoice.dueDate);
+        const daysInArrear = Math.floor(
+          (today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)
+        );
+
+        if (daysInArrear > 0) {
+          if (daysInArrear <= 30) updatedBuckets["1-30"] += invoice.amount;
+          else if (daysInArrear <= 60) updatedBuckets["31-60"] += invoice.amount;
+          else if (daysInArrear <= 90) updatedBuckets["61-90"] += invoice.amount;
+          else updatedBuckets["91+"] += invoice.amount;
+        }
+      });
+
+      setAgingBuckets(updatedBuckets);
     }
   }, [customerId]);
 
   const handleBack = () => {
     router.back();
-  };
-
-  const exportToExcel = () => {
-    if (!customer) return;
-
-    const workbook = XLSX.utils.book_new();
-    
-    // 1️⃣ Customer details as an array of arrays (for structured placement)
-    const customerData = [
-      ["Customer Details"],  // Title Row
-      ["ID", "Name", "Region", "Portfolio"],  // Header Row
-      [customer.id, customer.name, customer.region, customer.portfolio], // Data Row
-      [],  // First Empty Row
-      []   // Second Empty Row
-    ];
-
-    // 2️⃣ Invoice data formatted as an array of arrays
-    const invoiceHeader = [
-      ["Invoice ID", "Invoice Date", "Due Date", "Days in Arrear", "Amount"]
-    ];
-    const invoiceRows = invoices.map(({ id, invoiceDate, dueDate, amount }) => {
-      const parsedDueDate = parseDate(dueDate);
-      const today = new Date();
-      const daysInArrear = Math.floor((today.getTime() - parsedDueDate.getTime()) / (1000 * 60 * 60 * 24));
-
-      return [id, invoiceDate, dueDate, daysInArrear, `$${amount.toFixed(2)}`];
-    });
-
-    // 3️⃣ Combine customer data and invoice data
-    const fullSheetData = [...customerData, ...invoiceHeader, ...invoiceRows];
-
-    // 4️⃣ Convert to worksheet & add to workbook
-    const worksheet = XLSX.utils.aoa_to_sheet(fullSheetData);
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Report");
-
-    // 5️⃣ Trigger file download
-    XLSX.writeFile(workbook, `customer_${customer.id}.xlsx`);
   };
 
   if (!customer) return <p>Customer not found.</p>;
@@ -105,9 +91,36 @@ const CustomerDetailsPage = () => {
       <p><strong>Region:</strong> {customer.region}</p>
       <p><strong>Portfolio:</strong> {customer.portfolio}</p>
 
+      {/* Aging Buckets Summary */}
+      <h2>Aging Buckets</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Days Overdue</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1-30 days</td>
+            <td>${agingBuckets["1-30"].toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>31-60 days</td>
+            <td>${agingBuckets["31-60"].toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>61-90 days</td>
+            <td>${agingBuckets["61-90"].toFixed(2)}</td>
+          </tr>
+          <tr>
+            <td>91+ days</td>
+            <td>${agingBuckets["91+"].toFixed(2)}</td>
+          </tr>
+        </tbody>
+      </table>
+
       <h2>Outstanding Invoices</h2>
-      {/* Export to Excel Button */}
-      <button onClick={exportToExcel}>Export to Excel</button>
       {invoices.length > 0 ? (
         <table>
           <thead>
@@ -124,7 +137,9 @@ const CustomerDetailsPage = () => {
               const invoiceDate = parseDate(invoice.invoiceDate);
               const dueDate = parseDate(invoice.dueDate);
               const today = new Date();
-              const daysInArrear = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+              const daysInArrear = Math.floor(
+                (today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24)
+              );
 
               return (
                 <tr key={invoice.id}>
@@ -146,3 +161,4 @@ const CustomerDetailsPage = () => {
 };
 
 export default CustomerDetailsPage;
+

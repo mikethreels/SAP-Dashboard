@@ -1,5 +1,6 @@
 import mockData from "@/data/mockData.json";
 import { parseDate } from "@/utils/dateUtils";
+import { useEffect, useState } from "react";
 
 const PortfolioOverview = () => {
   const portfolioStats = mockData.customers.reduce((acc, customer) => {
