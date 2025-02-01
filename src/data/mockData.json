@@ -19,7 +19,8 @@
     { "id": 17, "name": "Customer 17", "region": "North", "portfolio": "Collector A" },
     { "id": 18, "name": "Customer 18", "region": "South", "portfolio": "Collector B" },
     { "id": 19, "name": "Customer 19", "region": "East", "portfolio": "Collector D" },
-    { "id": 20, "name": "Customer 20", "region": "West", "portfolio": "Collector C" }
+    { "id": 20, "name": "Customer 20", "region": "West", "portfolio": "Collector C" },
+    { "id": 21, "name": "Customer 21", "region": "West", "portfolio": "Collector C" }
   ],
   "invoices": [
     { "id": 101, "customerId": 1, "amount": 5500, "invoiceDate": "01.01.2025", "dueDate": "01.02.2020" },
